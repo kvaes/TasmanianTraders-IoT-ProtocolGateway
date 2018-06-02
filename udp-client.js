@@ -5,6 +5,7 @@ require('dotenv').config();
 var dgram = require('dgram');
 var userver = dgram.createSocket('udp4');
 const port = 41234;
+const imsibase = '2061034000000';
 
 // azure sdk
 const clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
@@ -36,8 +37,9 @@ userver.on('error', (err) => {
 });
 
 userver.on('message', function (buffer, rinfo) {
-    udp_msg_counter++;
-    sendToHub(new Message(buffer.toString()));
+    let imsisuffix = Math.round( Math.random() * (9 - 0) + 0 );
+    let payload = imsibase + imsisuffix + buffer.toString();
+    sendToHub(new Message(payload));
     console.log(`server got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
 });
 
