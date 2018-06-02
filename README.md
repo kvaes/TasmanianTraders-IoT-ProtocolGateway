@@ -4,7 +4,8 @@ super simple and not yet reliable UDP-AzureIoTHuB cloud-gw (oapque)
 
 ![](static/diagram.png?raw=true)
   
-Use Case 1: an udp device sends a raw datagram to the GW that forwards to IoT Hub over AMQP.  
+**Use Case 1:**  
+An udp device sends a raw datagram to the GW that forwards to IoT Hub over AMQP.  
 
 The message can be anything you want and in the device simulator included in this repo you can type whatever you like at the command prompt.  
 
