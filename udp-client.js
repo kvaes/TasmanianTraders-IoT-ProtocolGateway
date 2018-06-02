@@ -2,10 +2,8 @@
 require('dotenv').config();
 
 // raw udp datagrams
-var dgram = require('dgram');
-var userver = dgram.createSocket('udp4');
-const port = 41234;
-const imsibase = '2061034000000';
+const dgram = require('dgram');
+const userver = dgram.createSocket('udp4');
 
 // azure sdk
 const clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
@@ -15,20 +13,22 @@ var azure_client = clientFromConnectionString(process.env.CONN_STRING);
 
 
 var sendToHub = (data) => {
-    let message = new Message(data);
-
+    let imsi = data.substring(0,14);
+    let payload = data.substring(14, data.length)
+    let json = {imsi: imsi, payload: payload}
+    let message = new Message(JSON.stringify(json));
     azure_client.sendEvent(message, (err, res) =>{
         if (err)
             console.log('Message sending error: ' + err.toString());
         else
         if (res)
-            console.log('temperature sent to Iot Hub: ' + JSON.stringify(message));
+            console.log('payload sent to Iot Hub: ' + JSON.stringify(message));
     })
 }
 
 userver.on('listening', () => {
     const address = userver.address();
-    console.log(`listening to raw udp datagrams at: ${address.address}:${address.port}`);
+    //console.log(`listening to raw udp datagrams at: ${address.address}:${address.port}`);
 });
 
 userver.on('error', (err) => {
@@ -37,10 +37,12 @@ userver.on('error', (err) => {
 });
 
 userver.on('message', function (buffer, rinfo) {
-    let imsisuffix = Math.round( Math.random() * (9 - 0) + 0 );
-    let payload = imsibase + imsisuffix + buffer.toString();
-    sendToHub(new Message(payload));
+    sendToHub(buffer.toString());
     console.log(`server got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
 });
 
-userver.bind(port);
+var spawn = () => {
+    userver.bind(process.env.PORT);
+}
+
+module.exports.spawn = spawn;

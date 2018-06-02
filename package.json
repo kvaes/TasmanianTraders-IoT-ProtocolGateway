@@ -4,15 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "azure-iot-device": "^1.2.2",
+    "azure-iot-device": "^1.4.3",
     "azure-iot-device-amqp": "^1.4.3",
+    "azure-iot-device-mqtt": "^1.4.3",
     "azure-iothub": "^1.2.2",
+    "cluster": "^0.7.7",
     "dgram": "^1.0.1",
-    "dotenv": "^5.0.1"
+    "dotenv": "^5.0.1",
+    "http": "0.0.0",
+    "readline-sync": "^1.4.9"
   }
 }
