@@ -1,10 +1,9 @@
-const PORT = 41234;
-var HOST = '127.0.0.1';
+'use strict';
+require('dotenv').config();
 var readline = require('readline-sync');
-
+const dgram = require('dgram');
 
 const imsibase = '2061034000000';
-const dgram = require('dgram');
 var client = dgram.createSocket('udp4');
 
 var sendData = () => {
@@ -12,9 +11,9 @@ var sendData = () => {
     let data = readline.question("data to send?");
     let payload = imsibase + imsisuffix + data;
 
-    client.send(payload, 0, payload.length, PORT, HOST, function (err, bytes) {
+    client.send(payload, 0, payload.length, process.env.PORT, process.env.HOST, function (err, bytes) {
         if (err) throw err;
-        console.log('UDP message sent to ' + HOST + ':' + PORT);
+        console.log('UDP message sent to ' + process.env.HOST + ':' + process.env.PORT);
         client.close();
     });
 }
