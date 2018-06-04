@@ -5,6 +5,7 @@ require('dotenv').config();
 const dgram = require('dgram');
 const userver = dgram.createSocket('udp4');
 
+
 // azure sdk
 const clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
 const Client = require('azure-iot-device').Client;
