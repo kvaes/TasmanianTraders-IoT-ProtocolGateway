@@ -10,10 +10,12 @@ var Message = require('azure-iot-device').Message;
 
 var sendToHub = (data) => {
     let imsi = data.substring(0,14);
+    // save this return address
+    let returnAddr =  {imsi: imsi, ip: deviceIp}
+    console.log(returnAddr)
     let payload = data.substring(14, data.length)
     let json = {imsi: imsi, payload: payload}
     let message = new Message(JSON.stringify(json));
-    console.log('send to hub: ' + message)
 
     aclient.sendEvent(message, (err, res) =>{
         if (err)
@@ -36,7 +38,7 @@ userver.on('error', (err) => {
 
 userver.on('message', function (buffer, rinfo) {
     console.log(`server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
-    sendToHub(buffer.toString());
+    sendToHub(buffer.toString(), rinfo.address);
 });
 
 var spawn = (azClient) => {

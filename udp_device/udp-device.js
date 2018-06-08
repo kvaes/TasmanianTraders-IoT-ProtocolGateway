@@ -15,7 +15,7 @@ const start = () => {
 
 const sendData = () => {
     let imsisuffix = Math.round(Math.random() * (9 - 0) + 0);
-    let payload = imsibase + imsisuffix + JSON.stringify({temperature: 12});
+    let payload = imsibase + imsisuffix + JSON.stringify({temperature: Math.random() * (14 - 12) + 12});
 
     client.send(payload, 0, payload.length, process.env.UDP_PORT, process.env.UDP_HOST, function (err, bytes) {
         if (err) throw err;
