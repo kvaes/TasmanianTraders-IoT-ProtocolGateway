@@ -8,7 +8,7 @@ var aclient = null;
 
 var Message = require('azure-iot-device').Message;
 
-var sendToHub = (data) => {
+var sendToHub = (data, deviceIp) => {
     let imsi = data.substring(0,14);
     // save this return address
     let returnAddr =  {imsi: imsi, ip: deviceIp}
