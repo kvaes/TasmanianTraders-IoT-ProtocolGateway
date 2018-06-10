@@ -1,18 +1,25 @@
 'use strict';
 'esversion:6'
-
 require('dotenv').config();
+
 // raw udp datagrams
 const dgram = require('dgram');
-const userver = dgram.createSocket('udp4');
-var aclient = null;
+const gw = dgram.createSocket('udp4');
+//gw.bind(process.env.PORT);
 
+// azure sdk
+const clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
+const Client = require('azure-iot-device').Client;
+var az_client = clientFromConnectionString(process.env.CONN_STRING);
 var Message = require('azure-iot-device').Message;
 
 var sendToHub = (data, deviceIp) => {
     let imsi = data.substring(0, 14);
     // save this return address
-    let returnAddr = {imsi: imsi, ip: deviceIp};
+    let returnAddr = {
+        imsi: imsi,
+        ip: deviceIp
+    };
     process.send(returnAddr);
 
     let payload = data.substring(14, data.length)
@@ -22,26 +29,26 @@ var sendToHub = (data, deviceIp) => {
     }
     let message = new Message(JSON.stringify(json));
 
-    aclient.sendEvent(message, (err, res) => {
+    az_client.sendEvent(message, (err, res) => {
         if (err)
             console.log('Message sending error: ' + err.toString());
-        //else
-        //if (res)
-        //    console.log('payload sent to Iot Hub: ' + JSON.stringify(message));
+        else
+        if (res)
+            console.log('payload sent to Iot Hub: ' + JSON.stringify(message));
     })
 }
 
-userver.on('listening', () => {
-    const address = userver.address();
-    //console.log(`listening to raw udp datagrams at: ${address.address}:${address.port}`);
+gw.on('listening', () => {
+    const address = gw.address();
+    console.log(`${process.pid} listening to raw udp datagrams at: ${address.address}:${address.port}`);
 });
 
-userver.on('error', (err) => {
+gw.on('error', (err) => {
     console.log(`server error:\n${err.stack}`);
-    userver.close();
+    gw.close();
 });
 
-userver.on('message', function (buffer, rinfo) {
+gw.on('message', function (buffer, rinfo) {
     console.log(`server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
     sendToHub(buffer.toString(), rinfo.address);
 });
@@ -49,7 +56,7 @@ userver.on('message', function (buffer, rinfo) {
 var spawn = (azClient) => {
     aclient = azClient;
     console.log('Server on ' + process.pid + ' started!');
-    userver.bind(process.env.PORT);
+    //userver.bind(process.env.PORT);
 }
 
-module.exports.spawn = spawn;
+module.exports = gw;
