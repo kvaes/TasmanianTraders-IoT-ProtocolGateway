@@ -15,7 +15,6 @@ var Message = require('azure-iot-device').Message;
 
 var sendToHub = (data, deviceIp) => {
     let imsi = data.substring(0, 14);
-    // save this return address
     let returnAddr = {
         imsi: imsi,
         ip: deviceIp
@@ -32,9 +31,6 @@ var sendToHub = (data, deviceIp) => {
     az_client.sendEvent(message, (err, res) => {
         if (err)
             console.log('Message sending error: ' + err.toString());
-        else
-        if (res)
-            console.log('payload sent to Iot Hub: ' + JSON.stringify(message));
     })
 }
 
@@ -49,14 +45,8 @@ gw.on('error', (err) => {
 });
 
 gw.on('message', function (buffer, rinfo) {
-    console.log(`server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
+    //console.log(`server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
     sendToHub(buffer.toString(), rinfo.address);
 });
-
-var spawn = (azClient) => {
-    aclient = azClient;
-    console.log('Server on ' + process.pid + ' started!');
-    //userver.bind(process.env.PORT);
-}
 
 module.exports = gw;

@@ -1,27 +1,28 @@
 var cluster = require('cluster');
-var worker; 
-var device_dict = {};
+var jsonfile = require('jsonfile')
+var file = './dict.json';
+var worker, dict;
 
 if (cluster.isMaster) {
-  // Count the machine's CPUs
-  var cpuCount = require('os').cpus().length;
+    // Count the machine's CPUs
+    var cpuCount = require('os').cpus().length;
+    dict = jsonfile.readFileSync(file);
 
-  // Create a worker for each CPU
-  for (var i = 0; i < cpuCount; i += 1) {
-    worker = cluster.fork();
-    worker.on('message', function (device) {
-        if (!device_dict.hasOwnProperty(device.imsi)) 
-            device_dict[device.imsi] = device.ip;
+    // Create a worker for each CPU
+    for (var i = 0; i < cpuCount; i += 1) {
+        worker = cluster.fork();
+        worker.on('message', (device) => {
+                    if (!dict.hasOwnProperty(device.imsi)) {
+                        dict[device.imsi] = device.ip;
+                        jsonfile.writeFile(file, obj, (err) => { if (err) console.error(err) })
+                    } 
+            });
+    }
 
-            console.log('dict updated: ' + JSON.stringify(device_dict));
-
+    // Listen for dying workers
+    cluster.on('exit', function () {
+        cluster.fork();
     });
-  }
-
-  // Listen for dying workers
-  cluster.on('exit', function () {
-    cluster.fork();
-  });
 } else {
-  require('./server');
+    require('./server');
 }

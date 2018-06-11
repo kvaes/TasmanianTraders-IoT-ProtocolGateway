@@ -3,22 +3,25 @@ var Koa = require('koa');
 var api = new Koa();
 var Router = require('koa-router');
 var router = new Router();
+var body;
 
 // consfigure app, databases
 api
   .use(router.routes())
   .use(router.allowedMethods());
-console.log('api server spawned: ' + process.pid)
+  
+console.log('api server spawned: ' + process.pid);
 
 // Load Routes
 router
   .get('/', (ctx, next) => {
-    ctx.body = 'Home of UDP!';
+    ctx.body = 'home';
   })
-  .get('/hello', (ctx, next) => {
-    ctx.body = 'Hello!';
+  .get('/imsis', (ctx, next) => {
+    let imsi = jsonfile.readFileSync(file)
+    ctx.body = imsi;
   })
-  .get('/:id', (ctx, next) => {
+  .get('/imsi/:id', (ctx, next) => {
     ctx.body = 'The id you specified is: ' + ctx.params.id;
   })
   .post('/', (ctx, next) => {
@@ -26,5 +29,10 @@ router
       "what": "posted"
     });
   });
+
+// other stuff
+var jsonfile = require('jsonfile');
+var file = './dict.json';
+
 
 module.exports = api;
