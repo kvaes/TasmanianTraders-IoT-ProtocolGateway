@@ -1,5 +1,5 @@
 'use strict';
-'esversion:6'
+'esversion:6';
 require('dotenv').config();
 
 // raw udp datagrams

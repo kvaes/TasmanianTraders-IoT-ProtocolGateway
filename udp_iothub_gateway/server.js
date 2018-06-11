@@ -1,3 +1,6 @@
+'use strict';
+'esversion:6';
+
 const api = require('./api');
 const udpgw = require('./udpgw');
 

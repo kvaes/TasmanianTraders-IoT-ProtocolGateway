@@ -1,6 +1,9 @@
-var cluster = require('cluster');
-var jsonfile = require('jsonfile')
-var file = './dict.json';
+'use strict';
+'esversion:6';
+
+const cluster = require('cluster');
+const jsonfile = require('jsonfile')
+const file = './dict.json';
 var worker, dict;
 
 if (cluster.isMaster) {
@@ -14,7 +17,8 @@ if (cluster.isMaster) {
         worker.on('message', (device) => {
                     if (!dict.hasOwnProperty(device.imsi)) {
                         dict[device.imsi] = device.ip;
-                        jsonfile.writeFile(file, obj, (err) => { if (err) console.error(err) })
+                        jsonfile.writeFile(file, dict, (err) => { if (err) console.error(err) })
+                        worker.send({msgFromMaster: 'new_imsi'});
                     } 
             });
     }
