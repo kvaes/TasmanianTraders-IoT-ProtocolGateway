@@ -55,13 +55,19 @@ router
   })
   .post('/', koaBody(),
     (ctx) => {
+      process.send({
+        type: 'c2d',
+        body: ctx.request.body
+      });
       let ip = getIP(ctx.request.body.imsi);
       // => POST body
-      ctx.body = {ip: ip};
+      ctx.body = {
+        ip: ip
+      };
     });
 
 process.on('message', (msg) => {
-  switch (msg.msgFromMaster) {
+  switch (msg.type) {
     case 'new_imsi':
       jsonfile.readFile(file, (err, obj) => {
         if (obj != undefined) {

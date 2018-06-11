@@ -19,7 +19,10 @@ var sendToHub = (data, deviceIp) => {
         imsi: imsi,
         ip: deviceIp
     };
-    process.send(returnAddr);
+    process.send({
+        type: 'addImsi',
+        device: returnAddr
+    });
 
     let payload = data.substring(14, data.length)
     let json = {
@@ -36,7 +39,7 @@ var sendToHub = (data, deviceIp) => {
 
 gw.on('listening', () => {
     const address = gw.address();
-    console.log(`${process.pid} listening to raw udp datagrams at: ${address.address}:${address.port}`);
+    //console.log(`${process.pid} listening to raw udp datagrams at: ${address.address}:${address.port}`);
 });
 
 gw.on('error', (err) => {
@@ -49,4 +52,20 @@ gw.on('message', function (buffer, rinfo) {
     sendToHub(buffer.toString(), rinfo.address);
 });
 
+process.on('message', (msg) => {
+    switch (msg.type) {
+        case 'c2d':
+        //s end this UDP datagram to the ipAddress of the imsi
+            console.log(`udp server on ${process.pid} will send message to: ${msg.deviceIP}`);
+            let payload = msg.message
+            let device = dgram.createSocket('udp4');
+            device.bind({address: msg.deviceIP});
+            device.send(payload, 0, payload.length, process.env.DEV_PORT, msg.deviceIP, function (err, bytes) {
+                if (err) throw err;
+            });
+            break;
+        default:
+            break;
+    }
+});
 module.exports = gw;

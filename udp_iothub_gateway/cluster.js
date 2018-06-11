@@ -14,13 +14,31 @@ if (cluster.isMaster) {
     // Create a worker for each CPU
     for (var i = 0; i < cpuCount; i += 1) {
         worker = cluster.fork();
-        worker.on('message', (device) => {
-                    if (!dict.hasOwnProperty(device.imsi)) {
-                        dict[device.imsi] = device.ip;
-                        jsonfile.writeFile(file, dict, (err) => { if (err) console.error(err) })
-                        worker.send({msgFromMaster: 'new_imsi'});
-                    } 
-            });
+        worker.on('message', (msg) => {
+            switch (msg.type) {
+                case 'addImsi':
+                    if (!dict.hasOwnProperty(msg.device.imsi)) {
+                        dict[msg.device.imsi] = msg.device.ip;
+                        jsonfile.writeFile(file, dict, (err) => {
+                            if (err) console.error(err)
+                        })
+                        worker.send({
+                            type: 'new_imsi'
+                        });
+                    }
+                    break;
+                case 'c2d':
+                    let ip = dict[msg.body.imsi];
+                    worker.send({
+                        type: 'c2d',
+                        deviceIP: ip,
+                        message: msg.body.message
+                    });
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
     // Listen for dying workers
