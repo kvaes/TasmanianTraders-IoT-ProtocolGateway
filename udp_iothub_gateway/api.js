@@ -60,7 +60,6 @@ router
         body: ctx.request.body
       });
       let ip = getIP(ctx.request.body.imsi);
-      // => POST body
       ctx.body = {
         ip: ip
       };

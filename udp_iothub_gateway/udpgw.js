@@ -39,7 +39,7 @@ var sendToHub = (data, deviceIp) => {
 
 gw.on('listening', () => {
     const address = gw.address();
-    //console.log(`${process.pid} listening to raw udp datagrams at: ${address.address}:${address.port}`);
+    console.log(`udpgw node spawned: ${process.pid}`);
 });
 
 gw.on('error', (err) => {

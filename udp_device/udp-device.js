@@ -21,19 +21,17 @@ const sendData = () => {
 
     client.send(payload, 0, payload.length, process.env.GW_PORT, process.env.GW_HOST, function (err, bytes) {
         if (err) throw err;
-        console.log(JSON.stringify(payload) + ' sent to ' + process.env.GW_HOST + ':' + process.env.GW_PORT);
+        console.log(`${JSON.stringify(payload)} sent to ${process.env.GW_HOST}:${process.env.GW_PORT}`);
     });
 }
 
 server.on('listening', function () {
     var address = server.address();
-    //console.log('UDP Server listening on ' + address.address + ":" + address.port);
-    console.log(address)
-
+    console.log(`UDP Server listening on ${address.address}: ${address.port}`);
 });
 
 server.on('message', function (message, remote) {
-    console.log(remote.address + ':' + remote.port +' - ' + message);
+    console.log(`${remote.address}:${remote.port} - ${message}`);
 });
 
 start();

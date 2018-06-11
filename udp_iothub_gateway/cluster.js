@@ -2,7 +2,7 @@
 'esversion:6';
 
 const cluster = require('cluster');
-const jsonfile = require('jsonfile')
+const jsonfile = require('jsonfile');
 const file = './dict.json';
 var worker, dict;
 
