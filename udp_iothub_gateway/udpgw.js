@@ -5,13 +5,20 @@ require('dotenv').config();
 // raw udp datagrams
 const dgram = require('dgram');
 const gw = dgram.createSocket('udp4');
-//gw.bind(process.env.PORT);
 
 // azure sdk
 const clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
 const Client = require('azure-iot-device').Client;
 var az_client = clientFromConnectionString(process.env.CONN_STRING);
 var Message = require('azure-iot-device').Message;
+var msgCounter = 0;
+
+az_client.on('message', function (msg) {
+    console.log('Id: ' + msg.messageId + ' Body: ' + msg.data);
+    client.complete(msg,  _ = (err, res) => {
+        if (err) console.log('error sending c2d message')
+      });
+  });
 
 var sendToHub = (data, deviceIp) => {
     let imsi = data.substring(0, 14);
@@ -34,6 +41,10 @@ var sendToHub = (data, deviceIp) => {
     az_client.sendEvent(message, (err, res) => {
         if (err)
             console.log('Message sending error: ' + err.toString());
+        else {
+            msgCounter++;
+            console.log(`message sent by ${process.pid}: ${msgCounter}`);
+        }
     })
 }
 
