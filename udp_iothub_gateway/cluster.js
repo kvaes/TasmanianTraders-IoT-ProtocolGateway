@@ -27,12 +27,19 @@ if (cluster.isMaster) {
                         });
                     }
                     break;
+                case 'telemetry':
+                    worker.send({
+                        type: 'd2c',
+                        imsi: msg.imsi,
+                        payload: msg.payload
+                    });
+                    break;
                 case 'c2d':
-                    let ip = dict[msg.body.imsi];
+                    let ip = dict[msg.imsi];
                     worker.send({
                         type: 'c2d',
                         deviceIP: ip,
-                        message: msg.body.message
+                        payload: msg.payload
                     });
                     break;
                 default:

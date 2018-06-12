@@ -2,9 +2,14 @@
 'esversion:6';
 
 const api = require('./api');
-const udpgw = require('./udpgw');
-
 api.listen(3000);
+
+const iotdev = require('./iot_dev');
+
+const udpgw = require('./udpgw');
 udpgw.bind(process.env.GW_PORT);
+
+
+
 
 

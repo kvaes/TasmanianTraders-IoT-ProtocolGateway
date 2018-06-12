@@ -20,9 +20,7 @@ client.open(function (err) {
     let c2d = readline.question("enter a message to send: ");
     var data = JSON.stringify({ imsi : imsi, message: c2d });
     var message = new Message(data);
-    client.send(targetDevice, message, function (err, res) {
-      if (err) console.log('error sending c2d message')
-      else console.log(res)
+    client.send(targetDevice, message, (err, res) => {
     });
   }
 });
