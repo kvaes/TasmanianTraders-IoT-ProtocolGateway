@@ -7,6 +7,9 @@ var api = new Koa();
 var Router = require('koa-router');
 var koaBody = require('koa-body');
 
+var redis = require("redis"),
+    redis_client = redis.createClient();
+
 var router = new Router();
 var counter = 0;
 // consfigure app, databases
@@ -38,10 +41,11 @@ router
     counter++;
   })
   .get('/imsis', (ctx, next) => {
-    console.log(dict)
+    console.log('dict: ' + JSON.stringify(dict))
     ctx.body = dict;
   })
   .get('/ip/:id', (ctx, next) => {
+    console.log('========================')
     let result = {
       error: 'unkonw imsi'
     }
@@ -50,6 +54,13 @@ router
       result = {
         ip: ip
       }
+                    // ---------------------------------------
+                    // add to redis - experiment
+                    redis_client.get(ctx.params.id, function(err, reply) {
+                        // reply is null when the key is missing
+                        console.log('read ip from redis: ' + reply);
+                    });
+                    // ---------------------------------------
 
     ctx.body = result;
   })
