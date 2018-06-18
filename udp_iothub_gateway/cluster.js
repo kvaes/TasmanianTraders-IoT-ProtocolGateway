@@ -6,7 +6,7 @@ const jsonfile = require('jsonfile');
 var redis = require("redis"),
     redis_client = redis.createClient();
 const file = './dict.json';
-var worker:
+var worker;
     // var dict;
 
     if (cluster.isMaster) {
