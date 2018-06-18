@@ -1,4 +1,6 @@
 'use strict';
+'esversion:6';
+require('dotenv').config();
 
 const Protocol = require('azure-iot-device-amqp').Amqp;
 const Client = require('azure-iot-device').Client;
@@ -46,14 +48,15 @@ function printResultFor(op) {
 }
 
 process.on('message', (msg) => {
+  console.log(msg)
   switch (msg.type) {
       case 'd2c':
           //send this UDP datagram to the ipAddress of the imsi
           console.log(`${process.pid} will send ${msg.payload} to: ${msg.imsi}`);
-          let json = Object.assign ({
+          let json = {
             imsi: msg.imsi,
-            payload: JSON.parse(msg.payload)
-        });
+            payload: msg.payload
+        } ;
         let message = new Message(JSON.stringify(json));
           iot_client.sendEvent(message, (err, res) => {
             if (err)

@@ -27,7 +27,7 @@ gw.on('error', (err) => {
 });
 
 gw.on('message', (buffer, rinfo) => {
-    console.log(`server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
+    console.log(`<udpgw> server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
     let body = buffer.toString();
     let imsi = body.substring(0, 14);
     let payload = body.substring(14, body.length);

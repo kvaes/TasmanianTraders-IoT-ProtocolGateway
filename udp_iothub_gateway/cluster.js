@@ -31,7 +31,7 @@ if (cluster.isMaster) {
                     worker.send({
                         type: 'd2c',
                         imsi: msg.imsi,
-                        payload: msg.payload
+                        payload: msg.message
                     });
                     break;
                 case 'c2d':
