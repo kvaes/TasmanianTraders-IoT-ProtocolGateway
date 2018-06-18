@@ -50,10 +50,10 @@ process.on('message', (msg) => {
       case 'd2c':
           //send this UDP datagram to the ipAddress of the imsi
           console.log(`${process.pid} will send ${msg.payload} to: ${msg.imsi}`);
-          let json = {
+          let json = Object.assign ({
             imsi: msg.imsi,
-            payload: msg.payload
-        }
+            payload: JSON.parse(msg.payload)
+        });
         let message = new Message(JSON.stringify(json));
           iot_client.sendEvent(message, (err, res) => {
             if (err)
