@@ -8,7 +8,7 @@ var Router = require('koa-router');
 var koaBody = require('koa-body');
 
 var redis = require("redis"),
-    redis_client = redis.createClient();
+  redis_client = redis.createClient();
 
 var router = new Router();
 var counter = 0;
@@ -18,18 +18,13 @@ api
   .use(koaBody())
   .use(router.allowedMethods());
 
-const jsonfile = require('jsonfile');
-const file = './dict.json';
-var dict = jsonfile.readFileSync(file);
+//const jsonfile = require('jsonfile');
+//const file = './dict.json';
+//var dict = jsonfile.readFileSync(file);
 
 console.log('api server spawned: ' + process.pid);
 
-const getIP = (imsi) => {
-  if (dict.hasOwnProperty(imsi))
-    return dict[imsi];
-  else
-    return false;
-}
+
 
 // Load Routes
 router
@@ -41,28 +36,23 @@ router
     counter++;
   })
   .get('/imsis', (ctx, next) => {
-    console.log('dict: ' + JSON.stringify(dict))
-    ctx.body = dict;
+    //console.log('dict: ' + JSON.stringify(dict))
+    ctx.body = 'now the imsis are in redis, think about this';
   })
-  .get('/ip/:id', (ctx, next) => {
-    console.log('========================')
+  .get('/ip/:id', (ctx, next) => { //fix this - not working since redis
     let result = {
       error: 'unkonw imsi'
     }
-    let ip = getIP(ctx.params.id);
-    if (ip)
-      result = {
-        ip: ip
-      }
-                    // ---------------------------------------
-                    // add to redis - experiment
-                    redis_client.get(ctx.params.id, function(err, reply) {
-                        // reply is null when the key is missing
-                        console.log('read ip from redis: ' + reply);
-                    });
-                    // ---------------------------------------
 
-    ctx.body = result;
+    redis_client.get(ctx.params.id, function (err, reply) {
+      if (err)
+        result = err
+      else
+        result = {
+          ip: reply
+        }
+      ctx.body = result;
+    });
   })
   .post('/', koaBody(),
     (ctx) => {
@@ -76,6 +66,7 @@ router
       };
     });
 
+/*
 process.on('message', (msg) => {
   switch (msg.type) {
     case 'new_imsi':
@@ -90,5 +81,6 @@ process.on('message', (msg) => {
       break;
   }
 });
+*/
 
 module.exports = api;

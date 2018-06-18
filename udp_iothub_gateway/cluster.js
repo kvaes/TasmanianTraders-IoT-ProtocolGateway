@@ -15,7 +15,7 @@ var worker;
         // replace dictionary in file system with redis
         //    dict = jsonfile.readFileSync(file);
         redis_client.on("error", function (err) {
-            console.log("Error " + err);
+            console.log("Error: " + err);
         });
 
         // Create a worker for each CPU
@@ -34,10 +34,11 @@ var worker;
                         jsonfile.writeFile(file, dict, (err) => {
                             if (err) console.error(err)
                         })
-                        */
+                        
                         worker.send({
                             type: 'new_imsi'
                         });
+                        */
                         //}
                         break;
                     case 'telemetry':

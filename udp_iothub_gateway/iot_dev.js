@@ -48,7 +48,6 @@ function printResultFor(op) {
 }
 
 process.on('message', (msg) => {
-  console.log(msg)
   switch (msg.type) {
       case 'd2c':
           //send this UDP datagram to the ipAddress of the imsi
