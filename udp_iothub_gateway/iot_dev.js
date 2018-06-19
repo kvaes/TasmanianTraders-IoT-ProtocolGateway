@@ -14,7 +14,7 @@ var connectCallback = (err) => {
   if (err) {
     console.error('Could not connect: ' + err.message);
   } else {
-    console.log(`azure iot client connected to: ${process.pid}`);
+    console.log(`azure iot client spawned: ${process.pid}`);
 
     iot_client.on('message', (msg) => {
       let data = JSON.parse(msg.data);
@@ -31,7 +31,7 @@ var connectCallback = (err) => {
     });
 
     iot_client.on('disconnect', () => {
-      io_client.removeAllListeners();
+      iot_client.removeAllListeners();
       iot_client.open(connectCallback);
     });
   }

@@ -6,14 +6,6 @@ require('dotenv').config();
 const dgram = require('dgram');
 const gw = dgram.createSocket('udp4');
 
-/*
-// azure sdk
-var Protocol = require('azure-iot-device-amqp').Amqp;
-const clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
-const Client = require('azure-iot-device').Client;
-var az_client = clientFromConnectionString(process.env.CONN_STRING);
-var Message = require('azure-iot-device').Message;
-*/
 var msgCounter = 0;
 
 gw.on('listening', () => {
@@ -38,13 +30,8 @@ gw.on('message', (buffer, rinfo) => {
         message: payload
     });
 
-    process.send({
-        type: 'addImsi',
-        device: {
-            imsi: imsi,
-            ip: rinfo.address
-        }
-    });
+
+    
 });
 
 process.on('message', (msg) => {

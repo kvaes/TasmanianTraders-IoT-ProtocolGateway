@@ -20,6 +20,7 @@
     "koa": "^2.5.1",
     "koa-body": "^4.0.1",
     "koa-router": "^7.4.0",
+    "node-radius": "0.0.1",
     "redis": "^2.8.0"
   }
 }

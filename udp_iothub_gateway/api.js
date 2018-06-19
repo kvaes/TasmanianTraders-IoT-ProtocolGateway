@@ -7,9 +7,6 @@ var api = new Koa();
 var Router = require('koa-router');
 var koaBody = require('koa-body');
 
-var redis = require("redis"),
-  redis_client = redis.createClient();
-
 var router = new Router();
 var counter = 0;
 // consfigure app, databases
@@ -18,13 +15,7 @@ api
   .use(koaBody())
   .use(router.allowedMethods());
 
-//const jsonfile = require('jsonfile');
-//const file = './dict.json';
-//var dict = jsonfile.readFileSync(file);
-
 console.log('api server spawned: ' + process.pid);
-
-
 
 // Load Routes
 router
