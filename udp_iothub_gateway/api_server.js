@@ -14,7 +14,7 @@ var counter = 0;
 // api_server.listen(process.env.API_PORT);
 
 const koa_server = api_server.listen(process.env.API_PORT, () => {
-  console.log(`api_server pid:${process.pid} listening on port: ${process.env.API_PORT}`);
+  console.log(`api_server [pid:${process.pid}] listening on port: ${process.env.API_PORT}`);
 });
 api_server
   .use(router.routes())

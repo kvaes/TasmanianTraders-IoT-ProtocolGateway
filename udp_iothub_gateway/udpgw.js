@@ -10,7 +10,7 @@ var msgCounter = 0;
 
 gw.on('listening', () => {
     const address = gw.address();
-    console.log(`api_server pid:${process.pid} listening on port: ${address.port}`);
+    console.log(`udp_front_end [pid:${process.pid}] listening on port: ${address.port}`);
 });
 
 gw.on('error', (err) => {
@@ -29,9 +29,6 @@ gw.on('message', (buffer, rinfo) => {
         imsi: imsi,
         message: payload
     });
-
-
-    
 });
 
 process.on('message', (msg) => {
