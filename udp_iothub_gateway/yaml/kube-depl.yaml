@@ -22,7 +22,7 @@ spec:
         ports:
         - containerPort: 443
           name: port443
-        - containerPort: 3000
+        - containerPort: 8080
           name: port3000
         - containerPort: 1812
           name: radius

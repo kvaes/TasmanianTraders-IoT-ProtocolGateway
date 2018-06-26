@@ -10,16 +10,22 @@ var koaBody = require('koa-body');
 var router = new Router();
 var counter = 0;
 // consfigure app, databases
+
+// api_server.listen(process.env.API_PORT);
+
+const koa_server = api_server.listen(process.env.API_PORT, () => {
+  console.log(`api_server pid:${process.pid} listening on port: ${process.env.API_PORT}`);
+});
 api_server
   .use(router.routes())
   .use(koaBody())
   .use(router.allowedMethods());
 
-console.log('api_server server spawned: ' + process.pid);
 
 // Load Routes
 router
   .get('/', (ctx, next) => {
+    console.log('GET /')
     ctx.body = {
       text: "a simple counter to display how many times this api was called",
       counter: counter
@@ -57,14 +63,7 @@ router
       };
     });
 
-api_server.on('listening', onListening);
 
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string' ?
-    'pipe ' + addr :
-    'port ' + addr.port;
-  console.log('Listening on ' + bind);
-}
+
 
 module.exports = api_server;

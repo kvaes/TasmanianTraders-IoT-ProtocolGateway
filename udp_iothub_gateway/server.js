@@ -3,7 +3,6 @@
 require('dotenv').config();
 
 const api_server = require('./api_server');
-api_server.listen(process.env.API_PORT);
 /**
  * Event listener for HTTP server "error" event.
  */
