@@ -1,8 +1,18 @@
 'use strict';
 'esversion:6';
+require('dotenv').config();
 
-const api = require('./api');
-api.listen(3000);
+const api_server = require('./api_server');
+api_server.listen(process.env.API_PORT);
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
 
 const iotdev = require('./iot_dev');
 

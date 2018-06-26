@@ -3,25 +3,25 @@
 
 // Load Koa
 var Koa = require('koa');
-var api = new Koa();
+var api_server = new Koa();
 var Router = require('koa-router');
 var koaBody = require('koa-body');
 
 var router = new Router();
 var counter = 0;
 // consfigure app, databases
-api
+api_server
   .use(router.routes())
   .use(koaBody())
   .use(router.allowedMethods());
 
-console.log('api server spawned: ' + process.pid);
+console.log('api_server server spawned: ' + process.pid);
 
 // Load Routes
 router
   .get('/', (ctx, next) => {
-    console.log(dict)
     ctx.body = {
+      text: "a simple counter to display how many times this api was called",
       counter: counter
     };
     counter++;
@@ -57,21 +57,14 @@ router
       };
     });
 
-/*
-process.on('message', (msg) => {
-  switch (msg.type) {
-    case 'new_imsi':
-      jsonfile.readFile(file, (err, obj) => {
-        if (obj != undefined) {
-          dict = obj;
-          console.log('new dict: ' + JSON.stringify(dict));
-        }
-      });
-      break;
-    default:
-      break;
-  }
-});
-*/
+api_server.on('listening', onListening);
 
-module.exports = api;
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string' ?
+    'pipe ' + addr :
+    'port ' + addr.port;
+  console.log('Listening on ' + bind);
+}
+
+module.exports = api_server;

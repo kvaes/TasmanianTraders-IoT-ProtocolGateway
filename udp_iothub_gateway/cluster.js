@@ -20,18 +20,22 @@ if (cluster.isMaster) {
         worker.on('message', (msg) => {
             switch (msg.type) {
                 case 'pdp_ON':
-                    // maybe this should be on the workers -> THINK LATER
+                    // connect a client for this device
                     worker.send({
                         type: 'pdp_ON',
                         device: msg.device
                     });
-
+                    worker.send({
+                        type: 'connect_device',
+                        device: msg.device
+                    });
                     //}
                     break;
                 case 'pdp_OFF':
-                    // maybe this should be on the workers -> THINK LATER
+                    // disconnect the client for this device
+
                     worker.send({
-                        type: 'pdp_OFF',
+                        type: 'disconnect_device',
                         device: msg.device
                     });
 
