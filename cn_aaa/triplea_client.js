@@ -1,10 +1,9 @@
-// Example radius client sending auth packets.
+'use strict';
+require('dotenv').config();
 
 var radius = require('./lib/radius');
 var dgram = require('dgram');
-var util = require('util');
 var readline = require('readline-sync');
-
 var secret = 'radius_secret';
 
 
@@ -34,11 +33,23 @@ var accounting_stop = {
 
 
 var client = dgram.createSocket("udp4");
-client.bind(49001);
+//client.bind(process.env.AAA_SOCKET);
+client.bind({address: '0.0.0.0',port: 51000});
+
+client.on('listening', function () {
+  var address = client.address();
+  console.log(`AAA DEVICE listening on ${address.address}: ${address.port}`);
+});
+
+client.on('message', function (message, remote) {
+  console.log(`${remote.address}:${remote.port} - ${message}`);
+});
 
 var sent_packets = {};
 
 var sendRadius = (choice) => {
+  var operation;
+
   switch (choice) {
     case '1':
       operation = accounting_start;
@@ -55,7 +66,10 @@ var sendRadius = (choice) => {
     raw_packet: encoded,
     secret: operation.secret
   };
-  client.send(encoded, 0, encoded.length, 1812, "localhost");
+  client.send(encoded, 0, encoded.length, 1812, process.env.AAA_SERVER, (err, bytes) => {
+    if (err) throw err;
+    console.log(`${operation.code} sent to ${process.env.AAA_HOST}:${process.env.AAA_PORT}`);
+});
   console.log(`sent ${encoded.length} bytes`);
 }
 

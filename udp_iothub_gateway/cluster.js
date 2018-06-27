@@ -27,7 +27,7 @@ if (cluster.isMaster) {
                 case 'pdp_OFF':
                     console.log('[gw aaa] PDP_OFF ------> [naster]');
                     worker.send({
-                        type: 'disconnect_device',
+                        type: 'disconn_DEV',
                         device: msg.device
                     });
                     break;

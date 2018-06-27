@@ -26,7 +26,7 @@ const sendData = () => {
 
 server.on('listening', function () {
     var address = server.address();
-    console.log(`UDP Server listening on ${address.address}: ${address.port}`);
+    console.log(`UDP DEVICE listening on ${address.address}: ${address.port}`);
 });
 
 server.on('message', function (message, remote) {

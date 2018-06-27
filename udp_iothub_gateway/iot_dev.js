@@ -6,11 +6,11 @@ const Protocol = require('azure-iot-device-amqp').Amqp;
 const Client = require('azure-iot-device').Client;
 const Message = require('azure-iot-device').Message;
 const iothub = require('azure-iothub');
-var hubcs = process.env.HUBCS;
 var registry = iothub.Registry.fromConnectionString(process.env.HUBCS);
 var iot_client = null;
 var msgCounter = 0;
 var devArray = [];
+var hub_cli = null;
 
 var connectCallback = (err) => {
   if (err) {
@@ -35,7 +35,6 @@ var connectCallback = (err) => {
 
     iot_client.on('disconnect', () => {
       iot_client.removeAllListeners();
-      iot_client.open(connectCallback);
     });
   }
 };
@@ -68,33 +67,53 @@ process.on('message', (msg) => {
         }
       });
       break;
-    case 'disconnect_device':
+    case 'disconn_DEV':
+      console.log(`[master] disCONN_DEV ----> [iotdev]`);
+      console.log('devices in array: ' + devArray.length)
+
+      var deviceIP = msg.device.ip;
+      for (var i = 0; i < devArray.length; i++) {
+        if (devArray[i].ip === msg.device.ip)
+          hub_cli = devArray[i].client;
+        else
+          console.log('not connected');
+      }
+      hub_cli.close( (err, res) => {
+        if (err) console.log('error closing iot cevice client: ' + err);
+      });
+      let rem = devArray.filter(function (el) {
+        return el.ip !== deviceIP;
+      });
+      devArray = rem;
+      console.log('devices in array: ' + devArray.length)
       break;
     case 'd2c':
       //send this UDP datagram to the ipAddress of the imsi
       console.log(`[master] d2c ----> [iotdev]`);
-      var hub_cli = null;
       for (var i = 0; i < devArray.length; i++) {
         if (devArray[i].ip === msg.ip)
+        {
           hub_cli = devArray[i].client
+          let json = {
+            ip: msg.ip,
+            payload: msg.payload
+          };
+    
+          let message = new Message(JSON.stringify(json));
+          hub_cli.sendEvent(message, (err, res) => {
+            if (err)
+              console.log('Message sending error: ' + err.toString());
+            else {
+              msgCounter++;
+              console.log(`[iotdev] d2c ----> [iothub]`);
+    
+            }
+          });
+        }
         else
           console.log('not connected');
       }
-      let json = {
-        ip: msg.ip,
-        payload: msg.payload
-      };
 
-      let message = new Message(JSON.stringify(json));
-      hub_cli.sendEvent(message, (err, res) => {
-        if (err)
-          console.log('Message sending error: ' + err.toString());
-        else {
-          msgCounter++;
-          console.log(`[iotdev] d2c ----> [iothub]`);
-
-        }
-      })
       break;
     default:
       break;
