@@ -19,15 +19,12 @@ gw.on('error', (err) => {
 });
 
 gw.on('message', (buffer, rinfo) => {
-    console.log(`<udpgw> server on ${process.pid} got: ${buffer} from ${rinfo.address}:${rinfo.port}`);
-    let body = buffer.toString();
-    let imsi = body.substring(0, 14);
-    let payload = body.substring(14, body.length);
+    console.log('[device] d2c ------> [udpgw]');
 
     process.send({
-        type: 'telemetry',
-        imsi: imsi,
-        message: payload
+        type: 'd2c',
+        ip: rinfo.address,
+        payload: buffer.toString()
     });
 });
 

@@ -13,14 +13,17 @@ redis_client.on('connect', function () {
 
 process.on('message', (msg) => {
     switch (msg.type) {
-        case 'pdp_ON':
-            redis_client.set(msg.device.id, msg.device.ip);
-            console.log(`PDP context created for ${msg.device.id}`);
+        case 'store_IP':
+            console.log('[master] STORE_IP ---> [az_redis]');
+            let ip = msg.device.ip;
+            //redis_client.set(msg.device.id, msg.device.ip);
+                redis_client.hmset(ip, {
+                    'id': msg.device.id,
+                    'cs': 'null'
+                });
             break;
-        case 'pdp_OFF':
+        case 'del_IP':
             redis_client.del(msg.device.id);
-            console.log(`PDP context deleted for ${msg.device.id}`);
-
             break;
         default:
             break;

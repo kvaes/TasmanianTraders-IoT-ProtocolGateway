@@ -1,18 +1,12 @@
 'use strict';
 'esversion:6';
-
+//const winston = require('winston')
 const cluster = require('cluster');
-//const jsonfile = require('jsonfile');
-
-//const file = './dict.json';
 var worker;
-// var dict;
 
 if (cluster.isMaster) {
     // Count the machine's CPUs
     var cpuCount = require('os').cpus().length;
-    // replace dictionary in file system with redis
-    //    dict = jsonfile.readFileSync(file);
 
     // Create a worker for each CPU
     for (var i = 0; i < cpuCount; i += 1) {
@@ -20,43 +14,36 @@ if (cluster.isMaster) {
         worker.on('message', (msg) => {
             switch (msg.type) {
                 case 'pdp_ON':
-                    // connect a client for this device
+                    console.log('[gw aaa] PDP_ON -------> [naster]');
                     worker.send({
-                        type: 'pdp_ON',
+                        type: 'conn_DEV',
                         device: msg.device
                     });
                     worker.send({
-                        type: 'connect_device',
+                        type: 'store_IP',
                         device: msg.device
                     });
-                    //}
                     break;
                 case 'pdp_OFF':
-                    // disconnect the client for this device
-
+                    console.log('[gw aaa] PDP_OFF ------> [naster]');
                     worker.send({
                         type: 'disconnect_device',
                         device: msg.device
                     });
-
-                    //}
                     break;
-                case 'telemetry':
+                case 'd2c':
+                    console.log('[udp gw] d2c ------> [master]');
                     worker.send({
                         type: 'd2c',
-                        imsi: msg.imsi,
-                        payload: msg.message
+                        ip: msg.ip,
+                        payload: msg.payload
                     });
                     break;
                 case 'c2d':
-                    // replace dictionary in file system with redis
-                    // let ip = dict[msg.imsi];
-
                     redis_client.get(msg.imsi, function (err, reply) {
                         // reply is null when the key is missing
-                        console.log('read ip from redis: ' + reply);
+                        debug('read ip from redis: ' + reply);
                     });
-
                     worker.send({
                         type: 'c2d',
                         deviceIP: ip,

@@ -8,19 +8,16 @@ const Message = require('azure-iot-device').Message;
 const iothub = require('azure-iothub');
 var hubcs = process.env.HUBCS;
 var registry = iothub.Registry.fromConnectionString(process.env.HUBCS);
-
-
+var iot_client = null;
 var msgCounter = 0;
-//var connectionString = 'HostName=telenet-nbiot-hub.azure-devices.net;DeviceId=udpgw2;SharedAccessKey=naOCZpCTzGV05fQONyP2rLU3DlKYlO22VXj9W1Qzh88=';
-const connectionString = process.env.CONN_STRING;
-var iot_client = Client.fromConnectionString(connectionString, Protocol);
-var devices = [];
+var devArray = [];
 
 var connectCallback = (err) => {
   if (err) {
     console.error('Could not connect: ' + err.message);
   } else {
     console.log(`azure iot client spawned: ${process.pid}`);
+
 
     iot_client.on('message', (msg) => {
       let data = JSON.parse(msg.data);
@@ -43,8 +40,6 @@ var connectCallback = (err) => {
   }
 };
 
-iot_client.open(connectCallback);
-
 // Helper function to print results in the console
 function printResultFor(op) {
   return function printResult(err, res) {
@@ -55,27 +50,49 @@ function printResultFor(op) {
 
 process.on('message', (msg) => {
   switch (msg.type) {
-    case 'connect_device':
-    deviceID = msg.device.id;
-
+    case 'conn_DEV':
+      console.log(`[master] CONN_DEV ----> [iotdev]`);
+      var deviceID = msg.device.id;
+      var deviceIP = msg.device.ip;
+      registry.get(deviceID, (err, res) => {
+        if (err) console.log(err.name)
+        else {
+          let dev_cs = process.env.HOSTNAME + ';DeviceId=' + deviceID + ';SharedAccessKey=' + res.authentication.symmetricKey.primaryKey;
+          iot_client = Client.fromConnectionString(dev_cs, Protocol);
+          devArray.push({
+            "ip": deviceIP,
+            "id": deviceID,
+            "client": iot_client
+          });
+          iot_client.open(connectCallback);
+        }
+      });
       break;
     case 'disconnect_device':
-
       break;
     case 'd2c':
       //send this UDP datagram to the ipAddress of the imsi
-      console.log(`${process.pid} will send ${msg.payload} to: ${msg.imsi}`);
+      console.log(`[master] d2c ----> [iotdev]`);
+      var hub_cli = null;
+      for (var i = 0; i < devArray.length; i++) {
+        if (devArray[i].ip === msg.ip)
+          hub_cli = devArray[i].client
+        else
+          console.log('not connected');
+      }
       let json = {
-        imsi: msg.imsi,
+        ip: msg.ip,
         payload: msg.payload
       };
+
       let message = new Message(JSON.stringify(json));
-      iot_client.sendEvent(message, (err, res) => {
+      hub_cli.sendEvent(message, (err, res) => {
         if (err)
           console.log('Message sending error: ' + err.toString());
         else {
           msgCounter++;
-          console.log(`message sent by ${process.pid}: ${msgCounter}`);
+          console.log(`[iotdev] d2c ----> [iothub]`);
+
         }
       })
       break;

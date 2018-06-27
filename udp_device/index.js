@@ -16,8 +16,7 @@ const start = () => {
 }
 
 const sendData = () => {
-    let imsisuffix = Math.round(Math.random() * (9 - 0) + 0);
-    let payload = imsibase + imsisuffix + JSON.stringify({temperature: Math.random() * (14 - 12) + 12});
+    let payload = JSON.stringify({temperature: Math.random() * (14 - 12) + 12});
 
     client.send(payload, 0, payload.length, process.env.GW_PORT, process.env.GW_HOST, function (err, bytes) {
         if (err) throw err;

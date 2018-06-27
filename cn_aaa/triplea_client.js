@@ -14,7 +14,7 @@ var accounting_start = {
   identifier: 0,
   attributes: [
     ['Acct-Status-Type', 1],
-    ['Framed-IP-Address', '10.5.5.5'],
+    ['Framed-IP-Address', '127.0.0.1'],
     ['User-Name', '2401011234561234']
     //['User-Password', 'beverly123']
   ]
@@ -26,7 +26,7 @@ var accounting_stop = {
   identifier: 0,
   attributes: [
     ['Acct-Status-Type', 2],
-    ['Framed-IP-Address', '10.5.5.5'],
+    ['Framed-IP-Address', '127.0.0.1'],
     ['User-Name', '2401011234561234']
     //['User-Password', 'beverly123']
   ]
@@ -38,16 +38,13 @@ client.bind(49001);
 
 var sent_packets = {};
 
-var send = (choice) => {
+var sendRadius = (choice) => {
   switch (choice) {
     case '1':
       operation = accounting_start;
       break;
     case '2':
       operation = accounting_stop;
-      break;
-    case '3':
-      process.exit(0);
       break;
     default:
       console.log('not a valid operation');
@@ -59,13 +56,12 @@ var send = (choice) => {
     secret: operation.secret
   };
   client.send(encoded, 0, encoded.length, 1812, "localhost");
-  console.log('sent')
-  console.log('\n**********************************')
+  console.log(`sent ${encoded.length} bytes`);
 }
 
 var prompt = () => {
-  var choice = readline.question('(1) accounting start\n(2) accounting stop\n(3) exit program? ');
-  send(choice)
+  var choice = readline.question('(1) accounting start\n(2) accounting stop\n\n? ');
+  sendRadius(choice)
 }
 
 prompt();
