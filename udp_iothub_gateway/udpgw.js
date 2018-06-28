@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // raw udp datagrams
 const dgram = require('dgram');
-const gw = dgram.createSocket('udp4');
+const gw = dgram.createSocket('udp6');
 
 var msgCounter = 0;
 

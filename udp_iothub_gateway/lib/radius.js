@@ -485,9 +485,9 @@ Radius.decode_attributes = function(data, attr_hash, vendor, raw_attrs) {
       case "ipaddr":
         var octets = [];
         for (var i = 0; i < value.length; i++) {
-          octets.push(value[i]);
+          octets.push(String.fromCharCode(value[i])); // original code modified for ipv6 addresses
         }
-        value = octets.join(".");
+        value = octets.join("");
         break;
       case "date":
         value = new Date(value.readUInt32BE(0) * 1000);
@@ -813,10 +813,14 @@ Radius.encode_attributes = function(packet, attributes, vendor) {
           out_value = Buffer.from(in_value + "", "utf8");
           break;
         case "ipaddr":
-          out_value = Buffer.from(in_value.split("."));
+        console.log(in_value)
+        out_value = Buffer.from(in_value);
+          //out_value = Buffer.from(in_value.split("."));
+          /*
           if (out_value.length != 4) {
             throw new Error("encode: invalid IP: " + in_value);
           }
+          */
           break;
         case "date":
           in_value = Math.floor(in_value.getTime() / 1000);

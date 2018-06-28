@@ -13,7 +13,7 @@ var accounting_start = {
   identifier: 0,
   attributes: [
     ['Acct-Status-Type', 1],
-    ['Framed-IP-Address', '127.0.0.1'],
+    ['Framed-IP-Address', '::1'],
     ['User-Name', '2401011234561234']
     //['User-Password', 'beverly123']
   ]
@@ -25,7 +25,7 @@ var accounting_stop = {
   identifier: 0,
   attributes: [
     ['Acct-Status-Type', 2],
-    ['Framed-IP-Address', '127.0.0.1'],
+    ['Framed-IP-Address', '::1'],
     ['User-Name', '2401011234561234']
     //['User-Password', 'beverly123']
   ]
@@ -34,7 +34,7 @@ var accounting_stop = {
 
 var client = dgram.createSocket("udp4");
 //client.bind(process.env.AAA_SOCKET);
-client.bind({address: '0.0.0.0',port: 51000});
+client.bind({address: '0.0.0.0',port: 49001});
 
 client.on('listening', function () {
   var address = client.address();
@@ -61,7 +61,7 @@ var sendRadius = (choice) => {
       console.log('not a valid operation');
   }
 
-  var encoded = radius.encode(operation)
+  var encoded = radius.encode(operation);
   sent_packets[operation.identifier] = {
     raw_packet: encoded,
     secret: operation.secret
@@ -79,3 +79,44 @@ var prompt = () => {
 }
 
 prompt();
+
+
+
+/*
+'use strict';
+require('dotenv').config();
+var readline = require('readline-sync');
+const dgram = require('dgram');
+var client = dgram.createSocket('udp4');
+var server = dgram.createSocket('udp4');
+client.bind(process.env.DEV_SOCKET);
+server.bind(process.env.DEV_PORT);
+
+const imsibase = '2061034000000';
+
+const start = () => {
+    var interval = setInterval(function () {
+        sendData();
+    }, process.env.TIMEOUT);
+}
+
+const sendData = () => {
+    let payload = JSON.stringify({temperature: Math.random() * (14 - 12) + 12});
+
+    client.send(payload, 0, payload.length, process.env.GW_PORT, process.env.GW_HOST, function (err, bytes) {
+        if (err) throw err;
+        console.log(`${JSON.stringify(payload)} sent to ${process.env.GW_HOST}:${process.env.GW_PORT}`);
+    });
+}
+
+server.on('listening', function () {
+    var address = server.address();
+    console.log(`UDP DEVICE listening on ${address.address}: ${address.port}`);
+});
+
+server.on('message', function (message, remote) {
+    console.log(`${remote.address}:${remote.port} - ${message}`);
+});
+
+start();
+*/

@@ -37,7 +37,5 @@ radiusfe.on("message", function (msg, rinfo) {
     return;
   }
 });
-
 console.log(`radius client spawned: ${process.pid}`);
-
 module.exports = radiusfe;

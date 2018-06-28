@@ -2,8 +2,8 @@
 require('dotenv').config();
 var readline = require('readline-sync');
 const dgram = require('dgram');
-var client = dgram.createSocket('udp4');
-var server = dgram.createSocket('udp4');
+var client = dgram.createSocket('udp6');
+var server = dgram.createSocket('udp6');
 client.bind(process.env.DEV_SOCKET);
 server.bind(process.env.DEV_PORT);
 

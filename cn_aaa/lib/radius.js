@@ -814,10 +814,14 @@ Radius.encode_attributes = function(packet, attributes, vendor) {
           out_value = Buffer.from(in_value + "", "utf8");
           break;
         case "ipaddr":
-          out_value = Buffer.from(in_value.split("."));
+          //out_value = Buffer.from(in_value.split("."));
+            out_value = Buffer.from(in_value);
+            /*
           if (out_value.length != 4) {
             throw new Error("encode: invalid IP: " + in_value);
           }
+          */
+         console.log('out value: ' + out_value)
           break;
         case "date":
           in_value = Math.floor(in_value.getTime() / 1000);
